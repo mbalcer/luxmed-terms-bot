@@ -1,5 +1,6 @@
 package pl.mbalcer.luxmedreservation;
 
+import lombok.Getter;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
@@ -20,6 +21,9 @@ public class Authentication {
 
     private final WebDriver driver;
 
+    @Getter
+    private List<Cookie> seleniumCookies;
+
     public Authentication(WebDriver driver) {
         this.driver = driver;
     }
@@ -37,9 +41,9 @@ public class Authentication {
             throw new RuntimeException(e);
         }
 
-        List<Cookie> seleniumCookies = driver.manage().getCookies().stream().toList();
+        this.seleniumCookies = driver.manage().getCookies().stream().toList();
 
-        System.out.println("Cookies: " + seleniumCookies);
+        System.out.println("Cookies: " + this.seleniumCookies);
         driver.quit();
     }
 }

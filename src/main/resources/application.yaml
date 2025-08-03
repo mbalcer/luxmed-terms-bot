@@ -6,4 +6,4 @@ luxmed:
 
 logging:
   level:
-    root: debug
+    pl.mbalcer.luxmedreservation: debug

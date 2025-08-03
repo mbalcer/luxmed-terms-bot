@@ -19,15 +19,15 @@ import java.util.Optional;
 @RequestMapping("/api/terms")
 @Slf4j
 public class TermsApi {
-    private final AuthenticationService authenticationService;
+    private final SessionProvider sessionProvider;
 
-    public TermsApi(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public TermsApi(SessionProvider sessionProvider) {
+        this.sessionProvider = sessionProvider;
     }
 
     @GetMapping("/check")
     public List<TermsInfoForDay> checkTerms() {
-        List<Cookie> seleniumCookies = authenticationService.loginAndGetCookies();
+        List<Cookie> seleniumCookies = sessionProvider.loginAndGetCookies();
         StringBuilder cookieHeader = new StringBuilder();
         for (Cookie cookie : seleniumCookies) {
             cookieHeader.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");

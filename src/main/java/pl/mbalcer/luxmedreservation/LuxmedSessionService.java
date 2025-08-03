@@ -12,7 +12,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class AuthenticationService {
+public class LuxmedSessionService implements SessionProvider {
     @Value("${luxmed.email}")
     private String email;
 
@@ -21,10 +21,11 @@ public class AuthenticationService {
 
     private final ObjectFactory<WebDriver> webDriverFactory;
 
-    public AuthenticationService(ObjectFactory<WebDriver> webDriverFactory) {
+    public LuxmedSessionService(ObjectFactory<WebDriver> webDriverFactory) {
         this.webDriverFactory = webDriverFactory;
     }
 
+    @Override
     public List<Cookie> loginAndGetCookies() {
         WebDriver driver = webDriverFactory.getObject();
 

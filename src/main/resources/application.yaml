@@ -3,3 +3,7 @@ spring.application.name: luxmed-reservation
 luxmed:
   email: ${LUXMED_EMAIL:}
   password: ${LUXMED_PASSWORD:}
+
+logging:
+  level:
+    root: debug

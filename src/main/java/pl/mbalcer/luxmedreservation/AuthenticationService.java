@@ -1,35 +1,33 @@
 package pl.mbalcer.luxmedreservation;
 
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class Authentication {
+@Slf4j
+public class AuthenticationService {
     @Value("${luxmed.email}")
     private String email;
 
     @Value("${luxmed.password}")
     private String password;
 
-    private final WebDriver driver;
+    private final ObjectFactory<WebDriver> webDriverFactory;
 
-    @Getter
-    private List<Cookie> seleniumCookies;
-
-    public Authentication(WebDriver driver) {
-        this.driver = driver;
+    public AuthenticationService(ObjectFactory<WebDriver> webDriverFactory) {
+        this.webDriverFactory = webDriverFactory;
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void listen() {
+    public List<Cookie> loginAndGetCookies() {
+        WebDriver driver = webDriverFactory.getObject();
+
         driver.get("https://portalpacjenta.luxmed.pl");
         driver.findElement(By.id("Login")).sendKeys(email);
         driver.findElement(By.id("Password")).sendKeys(password);
@@ -41,9 +39,10 @@ public class Authentication {
             throw new RuntimeException(e);
         }
 
-        this.seleniumCookies = driver.manage().getCookies().stream().toList();
+        List<Cookie> seleniumCookies = driver.manage().getCookies().stream().toList();
 
-        System.out.println("Cookies: " + this.seleniumCookies);
+        log.debug("Cookies: {}", seleniumCookies);
         driver.quit();
+        return seleniumCookies;
     }
 }

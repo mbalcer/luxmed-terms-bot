@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 import pl.mbalcer.luxmedreservation.model.MedicalAppointmentResponse;
-import pl.mbalcer.luxmedreservation.model.TermsForService;
 import pl.mbalcer.luxmedreservation.model.TermsInfoForDay;
 
 import java.util.List;
@@ -20,15 +19,15 @@ import java.util.Optional;
 @RequestMapping("/api/terms")
 @Slf4j
 public class TermsApi {
-    private final Authentication authentication;
+    private final AuthenticationService authenticationService;
 
-    public TermsApi(Authentication authentication) {
-        this.authentication = authentication;
+    public TermsApi(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     @GetMapping("/check")
     public List<TermsInfoForDay> checkTerms() {
-        List<Cookie> seleniumCookies = authentication.getSeleniumCookies();
+        List<Cookie> seleniumCookies = authenticationService.loginAndGetCookies();
         StringBuilder cookieHeader = new StringBuilder();
         for (Cookie cookie : seleniumCookies) {
             cookieHeader.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
@@ -52,14 +51,14 @@ public class TermsApi {
 
         log.debug(String.valueOf(response));
 
-        List<TermsInfoForDay> availableDays = Optional.ofNullable(Objects.requireNonNull(response).getTermsForService())
-                .orElse(new TermsForService())
-                .getTermsInfoForDays()
+        List<TermsInfoForDay> availableDays = Optional.ofNullable(Objects.requireNonNull(response).termsForService())
+                .orElseThrow()
+                .termsInfoForDays()
                 .stream()
-                .filter(day -> day.getTermsCounter().getTermsNumber() > 0)
+                .filter(day -> day.termsCounter().termsNumber() > 0)
                 .toList();
 
-        availableDays.forEach(day -> log.info("Available day: {} with {} slots", day.getDay(), day.getTermsCounter().getTermsNumber()));
+        availableDays.forEach(termsInfoForDay -> log.info("Available day: {} with {} slots", termsInfoForDay.day(), termsInfoForDay.termsCounter().termsNumber()));
 
         return availableDays;
     }

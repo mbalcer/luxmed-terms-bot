@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import pl.mbalcer.luxmedreservation.model.MedicalAppointmentResponse;
 import pl.mbalcer.luxmedreservation.model.TermsInfoForDay;
+import pl.mbalcer.luxmedreservation.notification.MessageBuilder;
+import pl.mbalcer.luxmedreservation.notification.TelegramNotifier;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,10 +20,12 @@ import java.util.Optional;
 public class TermsService {
     private final SessionProvider sessionProvider;
     private final TelegramNotifier telegramNotifier;
+    private final MessageBuilder messageBuilder;
 
-    public TermsService(SessionProvider sessionProvider, TelegramNotifier telegramNotifier) {
+    public TermsService(SessionProvider sessionProvider, TelegramNotifier telegramNotifier, MessageBuilder messageBuilder) {
         this.sessionProvider = sessionProvider;
         this.telegramNotifier = telegramNotifier;
+        this.messageBuilder = messageBuilder;
     }
 
     public List<TermsInfoForDay> checkTerms() {
@@ -56,11 +60,10 @@ public class TermsService {
                 .filter(day -> day.termsCounter().termsNumber() > 0)
                 .toList();
 
-        if (!availableDays.isEmpty()) {
-            telegramNotifier.sendMessage("Znaleziono nowe terminy: " + availableDays);
-            availableDays.forEach(termsInfoForDay -> log.info("Available day: {} with {} slots", termsInfoForDay.day(), termsInfoForDay.termsCounter().termsNumber()));
-        } else {
-            telegramNotifier.sendMessage("Szukałem właśnie nowych terminów, ale nic nie znalazłem.");
+        String message = messageBuilder.buildMessage(availableDays);
+        if (!message.isEmpty()) {
+            telegramNotifier.sendMessage(message);
+            log.debug("Message to Telegram: " + message);
         }
 
         return availableDays;

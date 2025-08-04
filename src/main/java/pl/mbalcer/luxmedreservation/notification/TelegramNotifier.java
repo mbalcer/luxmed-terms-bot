@@ -1,4 +1,4 @@
-package pl.mbalcer.luxmedreservation;
+package pl.mbalcer.luxmedreservation.notification;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -29,8 +29,5 @@ public class TelegramNotifier {
                 .body(payload)
                 .retrieve()
                 .toBodilessEntity();
-    }
-
-    private record TelegramMessage(String chat_id, String text) {
     }
 }

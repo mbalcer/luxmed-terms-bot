@@ -4,10 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.List;
 
 @Component
@@ -28,17 +32,19 @@ public class LuxmedSessionService implements SessionProvider {
     @Override
     public List<Cookie> loginAndGetCookies() {
         WebDriver driver = webDriverFactory.getObject();
-
         driver.get("https://portalpacjenta.luxmed.pl");
-        driver.findElement(By.id("Login")).sendKeys(email);
-        driver.findElement(By.id("Password")).sendKeys(password);
-        driver.findElement(By.id("LoginSubmit")).click();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement loginInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("Login")));
+        WebElement passwordInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("Password")));
+        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("LoginSubmit")));
+
+        loginInput.sendKeys(email);
+        passwordInput.sendKeys(password);
+        loginButton.click();
+
+        wait.until(ExpectedConditions.urlContains("/Dashboard"));
 
         List<Cookie> seleniumCookies = driver.manage().getCookies().stream().toList();
 

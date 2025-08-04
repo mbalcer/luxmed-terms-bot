@@ -3,6 +3,10 @@ spring.application.name: luxmed-reservation
 luxmed:
   email: ${LUXMED_EMAIL:}
   password: ${LUXMED_PASSWORD:}
+notification:
+  telegram:
+    chat-id: ${TELEGRAM_CHAT_ID:}
+    token: ${TELEGRAM_TOKEN:}
 
 logging:
   level:

@@ -18,7 +18,7 @@ public class WebDriverConfig {
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public WebDriver webDriver() {
         ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless");
+        options.addArguments("--headless");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-gpu");

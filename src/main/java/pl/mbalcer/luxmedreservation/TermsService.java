@@ -11,9 +11,11 @@ import pl.mbalcer.luxmedreservation.model.TermsInfoForDay;
 import pl.mbalcer.luxmedreservation.notification.MessageBuilder;
 import pl.mbalcer.luxmedreservation.notification.TelegramNotifier;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -67,5 +69,9 @@ public class TermsService {
         }
 
         return availableDays;
+    }
+
+    public List<String> getRecentChecks() {
+        return messageBuilder.getTimes().stream().map(OffsetDateTime::toString).collect(Collectors.toList());
     }
 }

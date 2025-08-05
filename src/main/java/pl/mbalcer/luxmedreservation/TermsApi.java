@@ -22,4 +22,9 @@ public class TermsApi {
     public List<TermsInfoForDay> checkTerms() {
         return termsService.checkTerms();
     }
+
+    @GetMapping("/recent/checks")
+    public List<String> recentChecks() {
+        return termsService.getRecentChecks();
+    }
 }

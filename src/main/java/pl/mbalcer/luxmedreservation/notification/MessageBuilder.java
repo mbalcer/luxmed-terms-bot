@@ -42,4 +42,8 @@ public class MessageBuilder {
             return "🔔 Znaleziono nowe terminy: \n" + summaryTerms;
         }
     }
+
+    public List<OffsetDateTime> getTimes() {
+        return times;
+    }
 }

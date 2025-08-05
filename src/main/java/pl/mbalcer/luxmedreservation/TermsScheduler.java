@@ -14,7 +14,7 @@ public class TermsScheduler {
         this.termsService = termsService;
     }
 
-    @Scheduled(cron = "${luxmed.check.cron:0 0/30 * * * *}")
+    @Scheduled(cron = "0 0 * * * *")
     public void checkPeriodically() {
         try {
             log.info("🔁 Automatyczne sprawdzanie dostępnych terminów (CRON)...");

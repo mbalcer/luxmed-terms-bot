@@ -1,5 +1,3 @@
-spring.application.name: luxmed-reservation
-
 luxmed:
   email: ${LUXMED_EMAIL:}
   password: ${LUXMED_PASSWORD:}
@@ -11,3 +9,14 @@ notification:
 logging:
   level:
     pl.mbalcer.luxmedreservation: debug
+
+spring:
+  application.name: luxmed-search-terms
+  datasource:
+    url: jdbc:postgresql://luxmed-terms-db:5432/luxmed
+    username: admin
+    password: admin123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

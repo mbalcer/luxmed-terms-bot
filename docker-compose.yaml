@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: luxmed-terms-search-db
+    environment:
+      POSTGRES_DB: luxmed_terms_search
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - luxmed_net
+
+  app:
+    build: .
+    container_name: luxmed-terms-search-app
+    depends_on:
+      - db
+      - chrome
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/luxmed_terms_search
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      ENCRYPTION_KEY: rYZFRt1/FA3KuaP3tcfjz8wO9nOnINcgB/QW1cIePwo=
+    ports:
+      - "8080:8080"
+    networks:
+      - luxmed_net
+
+volumes:
+  db_data:
+
+networks:
+  luxmed_net:
+    driver: bridge

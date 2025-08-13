@@ -1,4 +1,4 @@
-package pl.mbalcer.luxmedreservation;
+package pl.mbalcer.luxmedreservation.authorization;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -8,7 +8,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -17,12 +16,6 @@ import java.util.List;
 @Component
 @Slf4j
 public class LuxmedSessionService implements SessionProvider {
-    @Value("${luxmed.email}")
-    private String email;
-
-    @Value("${luxmed.password}")
-    private String password;
-
     private final ObjectFactory<WebDriver> webDriverFactory;
 
     public LuxmedSessionService(ObjectFactory<WebDriver> webDriverFactory) {
@@ -30,7 +23,7 @@ public class LuxmedSessionService implements SessionProvider {
     }
 
     @Override
-    public List<Cookie> loginAndGetCookies() {
+    public List<Cookie> loginAndGetCookies(LoginRequest loginRequest) {
         WebDriver driver = webDriverFactory.getObject();
         driver.get("https://portalpacjenta.luxmed.pl");
 
@@ -40,8 +33,8 @@ public class LuxmedSessionService implements SessionProvider {
         WebElement passwordInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("Password")));
         WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("LoginSubmit")));
 
-        loginInput.sendKeys(email);
-        passwordInput.sendKeys(password);
+        loginInput.sendKeys(loginRequest.email());
+        passwordInput.sendKeys(loginRequest.password());
         loginButton.click();
 
         wait.until(ExpectedConditions.urlContains("/Dashboard"));

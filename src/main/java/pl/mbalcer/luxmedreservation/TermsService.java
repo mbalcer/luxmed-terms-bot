@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import pl.mbalcer.luxmedreservation.authorization.SessionProvider;
 import pl.mbalcer.luxmedreservation.model.MedicalAppointmentResponse;
 import pl.mbalcer.luxmedreservation.model.TermsInfoForDay;
 import pl.mbalcer.luxmedreservation.notification.MessageBuilder;
@@ -32,11 +33,11 @@ public class TermsService {
     }
 
     public List<TermsInfoForDay> checkTerms() {
-        List<Cookie> seleniumCookies = sessionProvider.loginAndGetCookies();
+//        List<Cookie> seleniumCookies = sessionProvider.loginAndGetCookies();
         StringBuilder cookieHeader = new StringBuilder();
-        for (Cookie cookie : seleniumCookies) {
-            cookieHeader.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
-        }
+//        for (Cookie cookie : seleniumCookies) {
+//            cookieHeader.append(cookie.getName()).append("=").append(cookie.getValue()).append("; ");
+//        }
 
         RestClient restClient = RestClient.builder()
                 .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0")

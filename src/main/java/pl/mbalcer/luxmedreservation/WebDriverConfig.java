@@ -1,22 +1,24 @@
 package pl.mbalcer.luxmedreservation;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import java.time.Duration;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Configuration
 public class WebDriverConfig {
 
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public WebDriver webDriver() {
+    public WebDriver webDriver(@Value("${SELENIUM_REMOTE_URL}") String seleniumUrl) throws URISyntaxException, MalformedURLException {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         options.addArguments("--no-sandbox");
@@ -24,10 +26,6 @@ public class WebDriverConfig {
         options.addArguments("--disable-gpu");
         options.addArguments("--remote-allow-origins=*");
 
-        WebDriverManager.chromedriver().setup();
-        WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-
-        return driver;
+        return new RemoteWebDriver(new URI(seleniumUrl).toURL(), options);
     }
 }

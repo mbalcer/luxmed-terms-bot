@@ -13,9 +13,9 @@ logging:
 spring:
   application.name: luxmed-search-terms
   datasource:
-    url: jdbc:postgresql://luxmed-terms-db:5432/luxmed
-    username: admin
-    password: admin123
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update

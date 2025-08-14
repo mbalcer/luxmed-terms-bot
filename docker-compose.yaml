@@ -11,8 +11,6 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    networks:
-      - luxmed_net
 
   app:
     build: .
@@ -24,13 +22,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/luxmed_terms_search
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin123
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       ENCRYPTION_KEY: rYZFRt1/FA3KuaP3tcfjz8wO9nOnINcgB/QW1cIePwo=
       SELENIUM_REMOTE_URL: http://chrome:4444/wd/hub
     ports:
       - "8080:8080"
-    networks:
-      - luxmed_net
 
   chrome:
     image: selenium/standalone-chrome:latest
@@ -39,12 +34,6 @@ services:
       - "4444:4444"
     privileged: true
     shm_size: 2g
-    networks:
-      - luxmed_net
 
 volumes:
   db_data:
-
-networks:
-  luxmed_net:
-    driver: bridge

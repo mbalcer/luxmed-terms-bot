@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.mbalcer.luxmedreservation.authorization.UserCredential;
 import pl.mbalcer.luxmedreservation.authorization.UserCredentialRepository;
+import pl.mbalcer.luxmedreservation.error.exception.DuplicateTermSearchException;
+import pl.mbalcer.luxmedreservation.error.exception.InvalidDateRangeException;
+import pl.mbalcer.luxmedreservation.error.exception.UserNotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +25,7 @@ public class TermSearchService {
     @Transactional
     public TermSearch create(String userEmail, CreateTermSearchRequest req) {
         UserCredential user = userRepo.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userEmail));
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
 
         validateDates(req.dateFrom(), req.dateTo());
 
@@ -30,7 +33,7 @@ public class TermSearchService {
                 userEmail, req.cityId(), req.serviceVariantId(), req.dateFrom(), req.dateTo(), req.delocalized() != null && req.delocalized()
         );
         if (existSearchTerm) {
-            throw new IllegalStateException("Such search already exists for this user");
+            throw new DuplicateTermSearchException();
         }
 
         TermSearch termSearch = TermSearchMapper.fromCreateDto(req);
@@ -46,7 +49,7 @@ public class TermSearchService {
 
     private static void validateDates(LocalDate from, LocalDate to) {
         if (to.isBefore(from)) {
-            throw new IllegalArgumentException("dateTo cannot be before dateFrom");
+            throw new InvalidDateRangeException();
         }
     }
 }

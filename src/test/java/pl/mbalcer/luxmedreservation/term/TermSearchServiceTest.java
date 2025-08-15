@@ -3,6 +3,9 @@ package pl.mbalcer.luxmedreservation.term;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import pl.mbalcer.luxmedreservation.authorization.UserCredential;
+import pl.mbalcer.luxmedreservation.error.exception.DuplicateTermSearchException;
+import pl.mbalcer.luxmedreservation.error.exception.InvalidDateRangeException;
+import pl.mbalcer.luxmedreservation.error.exception.UserNotFoundException;
 import pl.mbalcer.luxmedreservation.util.InMemoryTermSearchRepository;
 import pl.mbalcer.luxmedreservation.util.InMemoryUserCredentialRepository;
 
@@ -54,7 +57,7 @@ class TermSearchServiceTest {
         );
 
         assertThatThrownBy(() -> service.create("missing@example.com", req))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(UserNotFoundException.class)
                 .hasMessageContaining("User not found");
     }
 
@@ -65,7 +68,7 @@ class TermSearchServiceTest {
         );
 
         assertThatThrownBy(() -> service.create("test@example.com", req))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidDateRangeException.class)
                 .hasMessageContaining("dateTo cannot be before dateFrom");
     }
 
@@ -78,7 +81,7 @@ class TermSearchServiceTest {
         service.create("test@example.com", req);
 
         assertThatThrownBy(() -> service.create("test@example.com", req))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(DuplicateTermSearchException.class)
                 .hasMessageContaining("Such search already exists");
     }
 }

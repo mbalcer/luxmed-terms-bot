@@ -2,6 +2,7 @@ package pl.mbalcer.luxmedreservation.authorization;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pl.mbalcer.luxmedreservation.error.exception.EncryptionException;
 
 import java.util.Base64;
 

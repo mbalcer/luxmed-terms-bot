@@ -1,4 +1,4 @@
-package pl.mbalcer.luxmedreservation.authorization;
+package pl.mbalcer.luxmedreservation.error.exception;
 
 public class EncryptionException extends RuntimeException {
     public EncryptionException(String message, Throwable cause) {

@@ -2,6 +2,7 @@ package pl.mbalcer.luxmedreservation.authorization;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import pl.mbalcer.luxmedreservation.error.exception.EncryptionException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;

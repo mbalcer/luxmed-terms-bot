@@ -10,5 +10,7 @@ public interface TermSearchRepository {
             String email, Integer cityId, Long serviceVariantId, LocalDate dateFrom, LocalDate dateTo, boolean delocalized
     );
 
+    List<TermSearch> findAllByStatus(TermSearchStatus status);
+
     TermSearch save(TermSearch termSearch);
 }

@@ -2,6 +2,7 @@ package pl.mbalcer.luxmedreservation.util;
 
 import pl.mbalcer.luxmedreservation.term.TermSearch;
 import pl.mbalcer.luxmedreservation.term.TermSearchRepository;
+import pl.mbalcer.luxmedreservation.term.TermSearchStatus;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -31,6 +32,14 @@ public class InMemoryTermSearchRepository implements TermSearchRepository {
                         t.getDateTo().equals(dateTo) &&
                         t.isDelocalized() == delocalized
         );
+    }
+
+    @Override
+    public List<TermSearch> findAllByStatus(TermSearchStatus status) {
+        return storage.values()
+                .stream()
+                .filter(ts -> ts.getStatus().equals(status))
+                .toList();
     }
 
     @Override

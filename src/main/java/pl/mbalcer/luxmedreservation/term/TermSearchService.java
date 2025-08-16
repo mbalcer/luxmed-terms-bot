@@ -43,8 +43,17 @@ public class TermSearchService {
         return repo.save(termSearch);
     }
 
+    @Transactional(readOnly = true)
     public List<TermSearch> listForUser(String userEmail) {
         return repo.findAllByUser_Email(userEmail);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TermSearchDTO> listSearching() {
+        return repo.findAllByStatus(TermSearchStatus.SEARCHING)
+                .stream()
+                .map(TermSearchMapper::toDto)
+                .toList();
     }
 
     private static void validateDates(LocalDate from, LocalDate to) {

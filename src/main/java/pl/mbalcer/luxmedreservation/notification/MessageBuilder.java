@@ -1,7 +1,7 @@
 package pl.mbalcer.luxmedreservation.notification;
 
 import org.springframework.stereotype.Component;
-import pl.mbalcer.luxmedreservation.model.TermsInfoForDay;
+import pl.mbalcer.luxmedreservation.client.model.TermsInfoForDay;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;

@@ -1,4 +1,4 @@
-package pl.mbalcer.luxmedreservation.model;
+package pl.mbalcer.luxmedreservation.client.model;
 
 import java.util.List;
 

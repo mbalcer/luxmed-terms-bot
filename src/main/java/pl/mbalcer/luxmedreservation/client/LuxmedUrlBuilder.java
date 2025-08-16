@@ -1,4 +1,4 @@
-package pl.mbalcer.luxmedreservation;
+package pl.mbalcer.luxmedreservation.client;
 
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -14,7 +14,7 @@ public class LuxmedUrlBuilder {
     private LocalDate searchDateFrom;
     private LocalDate searchDateTo;
     private Boolean delocalized;
-    private List<Integer> doctorsIds = new ArrayList<>();
+    private List<Long> doctorsIds = new ArrayList<>();
 
     public LuxmedUrlBuilder searchPlaceId(int id) {
         this.searchPlaceId = id;
@@ -41,7 +41,7 @@ public class LuxmedUrlBuilder {
         return this;
     }
 
-    public LuxmedUrlBuilder addDoctorId(int id) {
+    public LuxmedUrlBuilder addDoctorId(Long id) {
         this.doctorsIds.add(id);
         return this;
     }

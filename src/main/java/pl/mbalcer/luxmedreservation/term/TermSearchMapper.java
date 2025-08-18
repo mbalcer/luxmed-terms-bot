@@ -1,5 +1,8 @@
 package pl.mbalcer.luxmedreservation.term;
 
+import pl.mbalcer.luxmedreservation.authorization.LoginRequest;
+import pl.mbalcer.luxmedreservation.authorization.UserCredential;
+
 import java.util.HashSet;
 
 public final class TermSearchMapper {
@@ -8,8 +11,10 @@ public final class TermSearchMapper {
     }
 
     public static TermSearchDTO toDto(TermSearch ts) {
+        UserCredential userCredential = ts.getUser();
         return new TermSearchDTO(
                 ts.getId(),
+                new LoginRequest(userCredential.getEmail(), userCredential.getPasswordEncrypted()),
                 ts.getCityId(),
                 ts.getServiceVariantId(),
                 ts.getDoctorIds(),

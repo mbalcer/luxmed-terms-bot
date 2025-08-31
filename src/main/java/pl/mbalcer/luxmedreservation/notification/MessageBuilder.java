@@ -3,6 +3,7 @@ package pl.mbalcer.luxmedreservation.notification;
 import org.springframework.stereotype.Component;
 import pl.mbalcer.luxmedreservation.client.model.TermsInfoForDay;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -32,7 +33,10 @@ public class MessageBuilder {
         } else {
             String summaryTerms = termsInfoForDay.stream()
                     .map(termsInfo -> {
-                        String date = OffsetDateTime.parse(termsInfo.day()).toLocalDate().toString();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                        String date = LocalDateTime.parse(termsInfo.day(), formatter)
+                                .toLocalDate()
+                                .toString();
                         int count = termsInfo.termsCounter().termsNumber();
 
                         return date + ": " + count;

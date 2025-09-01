@@ -8,28 +8,15 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class MessageBuilder {
-    private List<OffsetDateTime> times;
 
-    public MessageBuilder() {
-        times = new ArrayList<>();
-    }
-
-    public String buildMessage(List<TermsInfoForDay> termsInfoForDay) {
+    public Optional<String> buildMessage(List<TermsInfoForDay> termsInfoForDay) {
         if (termsInfoForDay == null || termsInfoForDay.isEmpty()) {
-            times.add(OffsetDateTime.now());
-            if (times.size() == 10) {
-                String summary = times.stream()
-                        .map(time -> time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                        .collect(Collectors.joining("\n"));
-                times.clear();
-                return "🙁 Szukamy co jakiś czas terminów, ale nadal nic nie ma. Ostatnie wyszukiwania: \n" + summary;
-            } else {
-                return "";
-            }
+            return Optional.empty();
         } else {
             String summaryTerms = termsInfoForDay.stream()
                     .map(termsInfo -> {
@@ -43,11 +30,7 @@ public class MessageBuilder {
                     })
                     .collect(Collectors.joining("\n"));
 
-            return "🔔 Znaleziono nowe terminy: \n" + summaryTerms;
+            return Optional.of("🔔 Znaleziono nowe terminy: \n" + summaryTerms);
         }
-    }
-
-    public List<OffsetDateTime> getTimes() {
-        return times;
     }
 }

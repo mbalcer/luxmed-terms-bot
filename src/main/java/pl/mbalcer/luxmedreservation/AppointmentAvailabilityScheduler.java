@@ -10,13 +10,13 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class TermsScheduler {
+public class AppointmentAvailabilityScheduler {
 
-    private final TermsService termsService;
+    private final AppointmentAvailabilityService appointmentAvailabilityService;
     private final TermSearchService termSearchService;
 
-    public TermsScheduler(TermsService termsService, TermSearchService termSearchService) {
-        this.termsService = termsService;
+    public AppointmentAvailabilityScheduler(AppointmentAvailabilityService appointmentAvailabilityService, TermSearchService termSearchService) {
+        this.appointmentAvailabilityService = appointmentAvailabilityService;
         this.termSearchService = termSearchService;
     }
 
@@ -27,7 +27,7 @@ public class TermsScheduler {
         try {
             termSearchService.listSearching()
                     .forEach(termSearch -> {
-                        List<TermsInfoForDay> termsInfoForDays = termsService.checkTerms(termSearch);
+                        List<TermsInfoForDay> termsInfoForDays = appointmentAvailabilityService.checkTerms(termSearch);
                         log.info("Znaleziono nowe terminy: " + termsInfoForDays);
                     });
         } catch (Exception e) {

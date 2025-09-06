@@ -19,7 +19,7 @@
         table {
             margin: 0 auto 2rem auto;
             border-collapse: collapse;
-            width: 90%;
+            width: 95%;
             background: #fff;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
@@ -35,39 +35,19 @@
         tr:nth-child(even) {
             background: #f9f9f9;
         }
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            margin-bottom: 0.3rem;
-            font-weight: bold;
-            color: #444;
-        }
-        .form-group input {
-            padding: 0.6rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
         .btn {
-            width: 100%;
-            padding: 0.8rem;
+            display: block;
+            margin: 0 auto;
+            padding: 0.8rem 1.5rem;
             background: #28a745;
             color: #fff;
             border: none;
             border-radius: 6px;
             font-size: 1rem;
             cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            width: fit-content;
         }
         .btn:hover {
             background: #218838;
@@ -78,7 +58,6 @@
 
 <h2>Moje wyszukiwania terminów</h2>
 
-<!-- tabela wyszukiwań -->
 <div
         hx-get="/api/search"
         hx-trigger="load"
@@ -90,6 +69,7 @@
             <th>ID</th>
             <th>Miasto</th>
             <th>Usługa</th>
+            <th>Lekarze (ID)</th>
             <th>Od</th>
             <th>Do</th>
             <th>Delokalizacja</th>
@@ -102,36 +82,7 @@
     </table>
 </div>
 
-<!-- formularz dodawania nowego wyszukiwania -->
-<div class="form-container">
-    <form
-            hx-post="/api/search"
-            hx-target="#search-table-body"
-            hx-swap="beforeend"
-    >
-        <div class="form-group">
-            <label for="cityId">Miasto (ID)</label>
-            <input type="number" id="cityId" name="cityId" required>
-        </div>
-        <div class="form-group">
-            <label for="serviceVariantId">Usługa (ID)</label>
-            <input type="number" id="serviceVariantId" name="serviceVariantId" required>
-        </div>
-        <div class="form-group">
-            <label for="dateFrom">Data od</label>
-            <input type="date" id="dateFrom" name="dateFrom" required>
-        </div>
-        <div class="form-group">
-            <label for="dateTo">Data do</label>
-            <input type="date" id="dateTo" name="dateTo" required>
-        </div>
-        <div class="form-group">
-            <label for="delocalized">Delokalizacja</label>
-            <input type="checkbox" id="delocalized" name="delocalized">
-        </div>
-        <button type="submit" class="btn">Dodaj wyszukiwanie</button>
-    </form>
-</div>
+<a href="/new-search-term.html" class="btn">➕ Dodaj nowe wyszukiwanie</a>
 
 <!-- template HTMX do renderowania tr -->
 <template id="row-template">
@@ -139,6 +90,7 @@
         <td>{{id}}</td>
         <td>{{cityId}}</td>
         <td>{{serviceVariantId}}</td>
+        <td>{{doctorIds}}</td>
         <td>{{dateFrom}}</td>
         <td>{{dateTo}}</td>
         <td>{{delocalized}}</td>
@@ -147,7 +99,6 @@
 </template>
 
 <script>
-    // Ustawianie nagłówków X-User-Email globalnie z localStorage
     document.body.addEventListener("htmx:configRequest", function(evt) {
         const email = localStorage.getItem("userEmail");
         if (email) {
@@ -155,33 +106,28 @@
         }
     });
 
-    // prosty renderer JSON -> HTML row dla HTMX
     document.body.addEventListener("htmx:afterOnLoad", function(evt) {
-        if (evt.detail.xhr.responseType === "" || evt.detail.xhr.responseType === "json") {
-            try {
-                const data = JSON.parse(evt.detail.xhr.responseText);
-                const target = evt.detail.elt.getAttribute("hx-target");
-                const tbody = document.querySelector(target);
-                const tmpl = document.getElementById("row-template").innerHTML;
+        try {
+            const data = JSON.parse(evt.detail.xhr.responseText);
+            const target = evt.detail.elt.getAttribute("hx-target");
+            const tbody = document.querySelector(target);
+            const tmpl = document.getElementById("row-template").innerHTML;
 
-                // gdy to lista
-                if (Array.isArray(data)) {
-                    tbody.innerHTML = "";
-                    data.forEach(d => tbody.innerHTML += renderRow(tmpl, d));
-                } else {
-                    // gdy to nowy element
-                    tbody.innerHTML += renderRow(tmpl, data);
-                }
-            } catch (e) {
-                // ignore, np. HTML response
+            if (Array.isArray(data)) {
+                tbody.innerHTML = "";
+                data.forEach(d => tbody.innerHTML += renderRow(tmpl, d));
+            } else {
+                tbody.innerHTML += renderRow(tmpl, data);
             }
-        }
+        } catch (e) {}
     });
 
     function renderRow(template, dto) {
-        return template.replace("{{id}}", dto.id ?? "")
+        return template
+            .replace("{{id}}", dto.id ?? "")
             .replace("{{cityId}}", dto.cityId ?? "")
             .replace("{{serviceVariantId}}", dto.serviceVariantId ?? "")
+            .replace("{{doctorIds}}", dto.doctorIds ? dto.doctorIds.join(", ") : "")
             .replace("{{dateFrom}}", dto.dateFrom ?? "")
             .replace("{{dateTo}}", dto.dateTo ?? "")
             .replace("{{delocalized}}", dto.delocalized ?? "")

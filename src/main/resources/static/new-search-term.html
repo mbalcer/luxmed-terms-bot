@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dodaj nowe wyszukiwanie</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 2rem;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            color: #444;
+        }
+        .form-group input {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .back-link {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Dodaj nowe wyszukiwanie</h2>
+
+<div class="form-container">
+    <form
+            hx-post="/api/search"
+            hx-encoding="json">
+        <div class="form-group">
+            <label for="cityId">Miasto (ID)</label>
+            <input type="number" id="cityId" name="cityId" required>
+        </div>
+        <div class="form-group">
+            <label for="serviceVariantId">Usługa (ID)</label>
+            <input type="number" id="serviceVariantId" name="serviceVariantId" required>
+        </div>
+        <div class="form-group">
+            <label for="doctorIds">Lekarze (ID, po przecinku)</label>
+            <input type="text" id="doctorIds" name="doctorIds">
+        </div>
+        <div class="form-group">
+            <label for="dateFrom">Data od</label>
+            <input type="date" id="dateFrom" name="dateFrom" required>
+        </div>
+        <div class="form-group">
+            <label for="dateTo">Data do</label>
+            <input type="date" id="dateTo" name="dateTo" required>
+        </div>
+        <div class="form-group">
+            <label for="delocalized">Delokalizacja</label>
+            <input type="checkbox" id="delocalized" name="delocalized">
+        </div>
+        <button type="submit" class="btn">Dodaj wyszukiwanie</button>
+    </form>
+
+    <a href="/terms.html" class="back-link">⬅ Wróć do listy wyszukiwań</a>
+</div>
+
+<script>
+    document.body.addEventListener("htmx:configRequest", function(evt) {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            evt.detail.headers["X-User-Email"] = email;
+        }
+
+        if (evt.detail.parameters && evt.detail.parameters.doctorIds) {
+            const doctors = evt.detail.parameters.doctorIds
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean);
+            evt.detail.parameters.doctorIds = doctors;
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -123,6 +123,8 @@
             if (resp.status === "SUCCESS") {
                 document.getElementById("login-message").innerHTML =
                     `<p class="message success">${resp.message}</p>`;
+                const email = document.getElementById("email").value;
+                localStorage.setItem("userEmail", email);
                 setTimeout(() => window.location.href = "/terms.html", 1000);
             } else {
                 document.getElementById("login-message").innerHTML =

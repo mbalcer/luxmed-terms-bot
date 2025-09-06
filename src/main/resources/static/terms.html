@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Moje wyszukiwania terminów</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 2rem;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        table {
+            margin: 0 auto 2rem auto;
+            border-collapse: collapse;
+            width: 90%;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        th {
+            background: #007bff;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+            color: #444;
+        }
+        .form-group input {
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Moje wyszukiwania terminów</h2>
+
+<!-- tabela wyszukiwań -->
+<div
+        hx-get="/api/search"
+        hx-trigger="load"
+        hx-target="#search-table-body"
+        hx-swap="innerHTML">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Miasto</th>
+            <th>Usługa</th>
+            <th>Od</th>
+            <th>Do</th>
+            <th>Delokalizacja</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="search-table-body">
+        <!-- tutaj HTMX wstrzyknie <tr> -->
+        </tbody>
+    </table>
+</div>
+
+<!-- formularz dodawania nowego wyszukiwania -->
+<div class="form-container">
+    <form
+            hx-post="/api/search"
+            hx-target="#search-table-body"
+            hx-swap="beforeend"
+    >
+        <div class="form-group">
+            <label for="cityId">Miasto (ID)</label>
+            <input type="number" id="cityId" name="cityId" required>
+        </div>
+        <div class="form-group">
+            <label for="serviceVariantId">Usługa (ID)</label>
+            <input type="number" id="serviceVariantId" name="serviceVariantId" required>
+        </div>
+        <div class="form-group">
+            <label for="dateFrom">Data od</label>
+            <input type="date" id="dateFrom" name="dateFrom" required>
+        </div>
+        <div class="form-group">
+            <label for="dateTo">Data do</label>
+            <input type="date" id="dateTo" name="dateTo" required>
+        </div>
+        <div class="form-group">
+            <label for="delocalized">Delokalizacja</label>
+            <input type="checkbox" id="delocalized" name="delocalized">
+        </div>
+        <button type="submit" class="btn">Dodaj wyszukiwanie</button>
+    </form>
+</div>
+
+<!-- template HTMX do renderowania tr -->
+<template id="row-template">
+    <tr>
+        <td>{{id}}</td>
+        <td>{{cityId}}</td>
+        <td>{{serviceVariantId}}</td>
+        <td>{{dateFrom}}</td>
+        <td>{{dateTo}}</td>
+        <td>{{delocalized}}</td>
+        <td>{{status}}</td>
+    </tr>
+</template>
+
+<script>
+    // Ustawianie nagłówków X-User-Email globalnie z localStorage
+    document.body.addEventListener("htmx:configRequest", function(evt) {
+        const email = localStorage.getItem("userEmail");
+        if (email) {
+            evt.detail.headers["X-User-Email"] = email;
+        }
+    });
+
+    // prosty renderer JSON -> HTML row dla HTMX
+    document.body.addEventListener("htmx:afterOnLoad", function(evt) {
+        if (evt.detail.xhr.responseType === "" || evt.detail.xhr.responseType === "json") {
+            try {
+                const data = JSON.parse(evt.detail.xhr.responseText);
+                const target = evt.detail.elt.getAttribute("hx-target");
+                const tbody = document.querySelector(target);
+                const tmpl = document.getElementById("row-template").innerHTML;
+
+                // gdy to lista
+                if (Array.isArray(data)) {
+                    tbody.innerHTML = "";
+                    data.forEach(d => tbody.innerHTML += renderRow(tmpl, d));
+                } else {
+                    // gdy to nowy element
+                    tbody.innerHTML += renderRow(tmpl, data);
+                }
+            } catch (e) {
+                // ignore, np. HTML response
+            }
+        }
+    });
+
+    function renderRow(template, dto) {
+        return template.replace("{{id}}", dto.id ?? "")
+            .replace("{{cityId}}", dto.cityId ?? "")
+            .replace("{{serviceVariantId}}", dto.serviceVariantId ?? "")
+            .replace("{{dateFrom}}", dto.dateFrom ?? "")
+            .replace("{{dateTo}}", dto.dateTo ?? "")
+            .replace("{{delocalized}}", dto.delocalized ?? "")
+            .replace("{{status}}", dto.status ?? "");
+    }
+</script>
+</body>
+</html>

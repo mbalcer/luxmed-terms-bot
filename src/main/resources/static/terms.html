@@ -52,9 +52,26 @@
         .btn:hover {
             background: #218838;
         }
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
+
+<button class="logout-btn" onclick="logout()">Wyloguj się</button>
 
 <h2>Moje wyszukiwania terminów</h2>
 
@@ -99,6 +116,27 @@
 </template>
 
 <script>
+    // Check if user is logged in
+    function checkAuth() {
+        const email = localStorage.getItem("userEmail");
+        if (!email) {
+            window.location.href = "/index.html";
+            return false;
+        }
+        return true;
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem("userEmail");
+        window.location.href = "/index.html";
+    }
+
+    // Check authentication on page load
+    if (!checkAuth()) {
+        // Redirect will happen in checkAuth()
+    }
+
     document.body.addEventListener("htmx:configRequest", function(evt) {
         const email = localStorage.getItem("userEmail");
         if (email) {

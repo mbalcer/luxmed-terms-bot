@@ -52,7 +52,7 @@ public class TermSearch {
     private boolean delocalized = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 30)
     private TermSearchStatus status = TermSearchStatus.SEARCHING;
 
     private OffsetDateTime createdAt;

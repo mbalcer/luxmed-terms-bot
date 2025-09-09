@@ -56,6 +56,18 @@ public class TermSearchService {
                 .toList();
     }
 
+    @Transactional
+    public void updateExpiredSearches() {
+        LocalDate today = LocalDate.now();
+        repo.findAllByStatus(TermSearchStatus.SEARCHING)
+                .stream()
+                .filter(search -> search.getDateTo().isBefore(today))
+                .forEach(expiredSearch -> {
+                    expiredSearch.setStatus(TermSearchStatus.COMPLETED_BUT_NOT_FOUND);
+                    repo.save(expiredSearch);
+                });
+    }
+
     private static void validateDates(LocalDate from, LocalDate to) {
         if (to.isBefore(from)) {
             throw new InvalidDateRangeException();

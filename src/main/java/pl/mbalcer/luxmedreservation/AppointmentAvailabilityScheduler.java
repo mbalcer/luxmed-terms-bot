@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import pl.mbalcer.luxmedreservation.client.model.TermsInfoForDay;
 import pl.mbalcer.luxmedreservation.term.TermSearchService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -25,11 +26,14 @@ public class AppointmentAvailabilityScheduler {
         log.info("🔁 Automatyczne sprawdzanie dostępnych terminów (CRON)...");
 
         try {
+            termSearchService.updateExpiredSearches();
+            
+            LocalDate today = LocalDate.now();
             termSearchService.listSearching()
-                    .forEach(termSearch -> {
-                        List<TermsInfoForDay> termsInfoForDays = appointmentAvailabilityService.checkTerms(termSearch);
-                        log.info("Znaleziono nowe terminy: " + termsInfoForDays);
-                    });
+                    .stream()
+                    .filter(termSearch -> !termSearch.dateTo().isBefore(today))
+                    .map(appointmentAvailabilityService::checkTerms)
+                    .forEach(termsInfoForDays -> log.info("Znaleziono nowe terminy: {}", termsInfoForDays));
         } catch (Exception e) {
             log.error("❌ Błąd podczas automatycznego sprawdzania terminów", e);
         }

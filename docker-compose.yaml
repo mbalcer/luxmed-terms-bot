@@ -5,10 +5,10 @@ services:
     container_name: luxmed-terms-search-db
     environment:
       POSTGRES_DB: luxmed_terms_search
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin123
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -20,8 +20,8 @@ services:
       - chrome
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/luxmed_terms_search
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
       ENCRYPTION_KEY: rYZFRt1/FA3KuaP3tcfjz8wO9nOnINcgB/QW1cIePwo=
       SELENIUM_REMOTE_URL: http://chrome:4444/wd/hub
     ports:
